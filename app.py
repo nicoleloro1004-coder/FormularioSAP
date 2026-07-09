@@ -252,7 +252,7 @@ with st.form("formulario_sap"):
         ]
 
     )
-        st.subheader("Herramientas y tecnologías")
+    st.subheader("Herramientas y tecnologías")
 
     tecnologias = st.multiselect(
 
