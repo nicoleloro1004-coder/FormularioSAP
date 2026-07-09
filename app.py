@@ -1,6 +1,12 @@
 import streamlit as st
-import pandas as pd
 from datetime import date
+
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph
+)
+
+from reportlab.lib.styles import getSampleStyleSheet
 
 st.set_page_config(
     page_title="Solicitud Perfil SAP",
