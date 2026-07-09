@@ -185,51 +185,119 @@ st.header("10. Observaciones")
 
 observaciones = st.text_area("Observaciones adicionales")
 
-if st.button("Guardar formulario"):
+campos_obligatorios = {
+    "Nombre": nombre,
+    "Cargo": cargo,
+    "Departamento": departamento,
+    "Puesto": puesto,
+    "Módulo SAP": modulo,
+    "Funciones": funciones,
+    "Ubicación": ubicacion,
+    "Contrato": contrato,
+    "Banda salarial": salario,
+    "Priorización": prioridad,
+    "Otros idiomas": otros
+}
 
-    datos = {
-        "Nombre":[nombre],
-        "Cargo":[cargo],
-        "Departamento":[departamento],
-        "Fecha":[fecha],
-        "Puesto":[puesto],
-        "Motivo":[motivo],
-        "Vacantes":[vacantes],
-        "Modulo SAP":[modulo],
-        "Submodulos":[submodulos],
-        "Soluciones":[", ".join(soluciones)],
-        "Tecnologías":[", ".join(tecnologias)],
-        "Años mínimos":[anos_min],
-        "Años ideales":[anos_ideal],
-        "Seniority":[seniority],
-        "Experiencia":[", ".join(experiencia)],
-        "Funciones":[funciones],
-        "Funciones valorables":[funciones_valorables],
-        "Inglés":[ingles],
-        "Otros idiomas":[otros],
-        "Ubicación":[ubicacion],
-        "Modalidad":[modalidad],
-        "Presencialidad":[presencialidad],
-        "Viajes":[viajes],
-        "Incorporación":[incorporacion],
-        "Contrato":[contrato],
-        "Salario":[salario],
-        "Priorización":[prioridad],
-        "Requisito descarte":[descarte],
-        "Observaciones":[observaciones]
-    }
+errores = []
 
-    df = pd.DataFrame(datos)
+for campo, valor in campos_obligatorios.items():
 
-    archivo = "Solicitud_SAP.xlsx"
+    if isinstance(valor, list):
 
-    df.to_excel(archivo,index=False)
+        if len(valor) == 0:
 
-    with open(archivo,"rb") as file:
-        st.download_button(
-            "Descargar Solicitud",
-            file,
-            archivo
+            errores.append(campo)
+
+    else:
+
+        if str(valor).strip() == "":
+
+            errores.append(campo)
+            
+if st.button("Enviar solicitud"):
+
+    if errores:
+
+        st.error(
+            "Faltan campos obligatorios:\n\n- "
+            + "\n- ".join(errores)
         )
 
-    st.success("Formulario generado correctamente.")
+        st.stop()
+
+    pdf = "Solicitud_Perfil_SAP.pdf"
+
+doc = SimpleDocTemplate(pdf)
+
+styles = getSampleStyleSheet()
+
+contenido = []
+
+contenido.append(
+    Paragraph(
+        "<b>Solicitud Perfil SAP</b>",
+        styles["Title"]
+    )
+)
+
+campos = {
+
+"Nombre":nombre,
+"Cargo":cargo,
+"Departamento":departamento,
+"Fecha":str(fecha),
+"Puesto":puesto,
+"Motivo":motivo,
+"Vacantes":vacantes,
+"Módulo SAP":modulo,
+"Submódulos":submodulos,
+"Soluciones SAP":", ".join(soluciones),
+"Herramientas":", ".join(tecnologias),
+"Años mínimos":anos_min,
+"Años ideales":anos_ideal,
+"Seniority":seniority,
+"Experiencia":", ".join(experiencia),
+"Funciones":funciones,
+"Funciones valorables":funciones_valorables,
+"Inglés":ingles,
+"Otros idiomas":otros,
+"Ubicación":ubicacion,
+"Modalidad":modalidad,
+"Presencialidad":presencialidad,
+"Viajes":viajes,
+"Incorporación":str(incorporacion),
+"Contrato":contrato,
+"Salario":salario,
+"Priorización":prioridad,
+"Requisito descarte":descarte,
+"Observaciones":observaciones
+
+}
+
+for campo, valor in campos.items():
+
+    contenido.append(
+        Paragraph(
+            f"<b>{campo}</b><br/>{valor}",
+            styles["BodyText"]
+        )
+    )
+
+doc.build(contenido)
+
+with open(pdf, "rb") as f:
+
+    st.download_button(
+
+        "📄 Descargar PDF",
+
+        f,
+
+        file_name=pdf,
+
+        mime="application/pdf"
+
+    )
+
+st.success("Solicitud creada correctamente.")
