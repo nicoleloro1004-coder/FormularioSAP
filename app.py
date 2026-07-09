@@ -1,6 +1,9 @@
 import streamlit as st
 from datetime import date
 from PIL import Image
+from io import BytesIO
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
 
 # ----------------------------------------------------------
 # CONFIGURACIÓN DE LA PÁGINA
@@ -650,11 +653,37 @@ if prioridad.strip()=="":
 
 else:
 
-    st.success("✅ Formulario validado correctamente.")
+    buffer = BytesIO()
 
-    st.info(
-        "En la siguiente versión se generará automáticamente el PDF."
+    doc = SimpleDocTemplate(buffer)
+
+    styles = getSampleStyleSheet()
+
+    contenido = []
+
+    contenido.append(
+        Paragraph(
+            "<b>SOLICITUD DE PERFIL SAP</b>",
+            styles["Title"]
+        )
     )
+
+    contenido.append(
+        Paragraph("<br/>", styles["BodyText"])
+    )
+
+    campos = {
+
+        "Nombre": nombre,
+        "Cargo": cargo,
+        "Departamento": departamento,
+        "Fecha": str(fecha),
+
+        "Puesto": puesto,
+        "Motivo": motivo,
+        "Vacantes": vacantes,
+
+        "Módulo
         # ----------------------------------------------------------
 # 3. REQUISITOS TÉCNICOS
 # ----------------------------------------------------------
